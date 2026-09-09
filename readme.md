@@ -15,7 +15,7 @@ An end-to-end AI customer support system built on the [Customer Support on Twitt
 
 ```bash
 # Clone the repo
-git clone <repo-url> && cd <repo-name>
+git clone https://github.com/LakshyaVerma123kl/support-bot.git && cd support-bot
 
 # Install dependencies
 pip install -r requirements.txt
