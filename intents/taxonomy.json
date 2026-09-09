@@ -1,0 +1,126 @@
+{
+  "brand": "AppleSupport",
+  "num_intents": 12,
+  "intents": [
+    {
+      "name": "software_bug_report",
+      "description": "Reports of specific software glitches, crashes, UI malfunctions, or unexpected behavior in iOS, macOS, or apps, including issues triggered by recent updates.",
+      "examples": [
+        "My iPhone keeps crashing to the home screen whenever I open the Camera app.",
+        "After updating to iOS 17, my keyboard autocorrects 'i' to 'A?' every time.",
+        "The Maps app is freezing and not loading traffic data.",
+        "Siri is not responding to voice commands and the screen goes black."
+      ]
+    },
+    {
+      "name": "hardware_defect",
+      "description": "Reports of physical device malfunctions, manufacturing defects, or component failures such as screen issues, touch sensitivity problems, or device bricking.",
+      "examples": [
+        "My new iPhone has a green line running down the left side of the screen.",
+        "The touch screen is unresponsive in the bottom right corner.",
+        "My MacBook Pro won't turn on at all; the power light is off.",
+        "The hinge on my iPad is loose and the screen cracks when I open it."
+      ]
+    },
+    {
+      "name": "battery_and_power",
+      "description": "Issues related to battery performance, rapid drain, overheating, charging problems, or battery health degradation.",
+      "examples": [
+        "My battery drains from 100% to 20% in just two hours.",
+        "The phone gets very hot when I am just browsing the web.",
+        "It takes 4 hours to charge from 0% to 50%, which is much slower than before.",
+        "Battery health dropped to 80% after only 6 months of use."
+      ]
+    },
+    {
+      "name": "connectivity_and_network",
+      "description": "Problems with Wi-Fi, Bluetooth, cellular data, or network connectivity dropping, failing to connect, or syncing issues between devices.",
+      "examples": [
+        "My Wi-Fi keeps disconnecting every few minutes.",
+        "Bluetooth headphones won't pair with my iPhone.",
+        "I have full signal bars but no internet connection.",
+        "My photos are not syncing to iCloud and are stuck in the upload queue."
+      ]
+    },
+    {
+      "name": "account_and_security",
+      "description": "Issues related to Apple ID login, account verification, security concerns, hacking, privacy breaches, or biometric authentication failures (Touch ID/Face ID).",
+      "examples": [
+        "I am locked out of my Apple ID and cannot reset my password.",
+        "Face ID is not recognizing my face even after re-enrolling.",
+        "I received a notification that my account was accessed from a new device.",
+        "My two-factor authentication codes are not arriving via SMS."
+      ]
+    },
+    {
+      "name": "billing_and_purchases",
+      "description": "Questions or complaints regarding incorrect charges, subscription pricing, payment methods, refunds, or digital purchase history.",
+      "examples": [
+        "I was charged twice for my Apple Music subscription.",
+        "I want to cancel my iCloud+ plan but can't find the option.",
+        "My app purchase is missing from my library.",
+        "Why did my credit card get declined when I bought a new iPad?"
+      ]
+    },
+    {
+      "name": "order_and_shipping",
+      "description": "Inquiries or complaints regarding product orders, shipping delays, carrier issues, or delivery status for physical hardware.",
+      "examples": [
+        "My order has been 'shipped' for 5 days but I haven't received a tracking update.",
+        "The package arrived damaged with a cracked box.",
+        "I need to change the delivery address for my new MacBook.",
+        "Why is my order on hold? I placed it two weeks ago."
+      ]
+    },
+    {
+      "name": "service_and_feature_inquiry",
+      "description": "General questions about how to use specific features, configure settings, warranty coverage, repair policies, or availability of services like Apple Pay.",
+      "examples": [
+        "How do I set up Apple Pay on my new iPhone?",
+        "What is covered under AppleCare+ for my iPad?",
+        "Can I transfer my data from my old Android phone to my new iPhone?",
+        "Where can I find the manual for my HomePod?"
+      ]
+    },
+    {
+      "name": "support_experience",
+      "description": "Feedback regarding the support process itself, including difficulty reaching agents, long wait times, poor service quality, or status updates on existing tickets.",
+      "examples": [
+        "I have been on hold for 45 minutes and still haven't reached an agent.",
+        "The previous support agent gave me incorrect information.",
+        "I am checking the status of my repair ticket #12345.",
+        "It is impossible to reach human support online; the chatbot is useless."
+      ]
+    },
+    {
+      "name": "resolution_feedback",
+      "description": "Messages indicating that a problem has been solved, expressing gratitude for previous support, or confirming that a fix worked.",
+      "examples": [
+        "Thanks, the restart fixed the issue. I can now access my files.",
+        "Just wanted to let you know the new battery arrived and works perfectly.",
+        "My issue is resolved. Thank you for your help.",
+        "The software update fixed the crashing problem."
+      ]
+    },
+    {
+      "name": "general_complaint",
+      "description": "Broad expressions of anger, dissatisfaction, or frustration with the brand, pricing, or product quality without a specific technical bug or actionable request.",
+      "examples": [
+        "I am very disappointed with the quality of this new phone.",
+        "Your prices are too high and the features are not worth it.",
+        "I hate that you keep changing the design every year.",
+        "This is the worst customer service experience I have ever had."
+      ]
+    },
+    {
+      "name": "other",
+      "description": "Messages that are unrelated to technical support, off-topic, irrelevant, or do not fit into any other specific category.",
+      "examples": [
+        "Hello, how are you today?",
+        "I am looking for a job at Apple, where do I apply?",
+        "This is a test message.",
+        "I don't have a question, just wanted to say hi."
+      ]
+    }
+  ]
+}
