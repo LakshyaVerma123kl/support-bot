@@ -1,9 +1,8 @@
 # Data
 data/raw/
-data/processed/
+data/processed/conversations.jsonl
 
-# Results
-results/
+
 
 # Environment
 .env

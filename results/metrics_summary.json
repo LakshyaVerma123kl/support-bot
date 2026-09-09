@@ -1,0 +1,270 @@
+{
+  "brand": "AppleSupport",
+  "golden_set_size": 10,
+  "agent": {
+    "intent": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "weighted_f1": 1.0,
+      "per_class": {
+        "connectivity_and_network": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 1.0
+        },
+        "general_complaint": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 1.0
+        },
+        "hardware_defect": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 1.0
+        },
+        "other": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 5.0
+        },
+        "software_bug_report": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 1.0
+        },
+        "support_experience": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 1.0
+        }
+      },
+      "labels": [
+        "connectivity_and_network",
+        "general_complaint",
+        "hardware_defect",
+        "other",
+        "software_bug_report",
+        "support_experience"
+      ]
+    },
+    "reply": {
+      "avg_bleu4": 0.010540388111692237,
+      "avg_rouge_l": 0.14498596526468535,
+      "n_evaluated": 10
+    },
+    "escalation": {
+      "accuracy": 0.5,
+      "escalation_precision": 0.0,
+      "escalation_recall": 0.0,
+      "escalation_f1": 0.0,
+      "true_distribution": {
+        "auto": 10
+      },
+      "predicted_distribution": {
+        "escalate": 5,
+        "auto": 5
+      }
+    }
+  },
+  "baselines": {
+    "trivial": {
+      "intent": {
+        "accuracy": 0.1,
+        "macro_f1": 0.030303030303030304,
+        "weighted_f1": 0.01818181818181818,
+        "per_class": {
+          "connectivity_and_network": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1.0
+          },
+          "general_complaint": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1.0
+          },
+          "hardware_defect": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1.0
+          },
+          "other": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 5.0
+          },
+          "software_bug_report": {
+            "precision": 0.1,
+            "recall": 1.0,
+            "f1": 0.18181818181818182,
+            "support": 1.0
+          },
+          "support_experience": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1.0
+          }
+        },
+        "labels": [
+          "connectivity_and_network",
+          "general_complaint",
+          "hardware_defect",
+          "other",
+          "software_bug_report",
+          "support_experience"
+        ]
+      },
+      "reply": {
+        "avg_bleu4": 0.04467882549048123,
+        "avg_rouge_l": 0.2542753337408767,
+        "n_evaluated": 10
+      },
+      "escalation": {
+        "accuracy": 1.0,
+        "escalation_precision": 0.0,
+        "escalation_recall": 0.0,
+        "escalation_f1": 0.0,
+        "true_distribution": {
+          "auto": 10
+        },
+        "predicted_distribution": {
+          "auto": 10
+        }
+      }
+    },
+    "simple": {
+      "intent": {
+        "accuracy": 0.2,
+        "macro_f1": 0.1607142857142857,
+        "weighted_f1": 0.24285714285714283,
+        "per_class": {
+          "connectivity_and_network": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1.0
+          },
+          "general_complaint": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1.0
+          },
+          "hardware_defect": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 1.0
+          },
+          "other": {
+            "precision": 0.5,
+            "recall": 0.2,
+            "f1": 0.2857142857142857,
+            "support": 5.0
+          },
+          "resolution_feedback": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0.0
+          },
+          "service_and_feature_inquiry": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0.0
+          },
+          "software_bug_report": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1.0
+          },
+          "support_experience": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1.0
+          }
+        },
+        "labels": [
+          "connectivity_and_network",
+          "general_complaint",
+          "hardware_defect",
+          "other",
+          "resolution_feedback",
+          "service_and_feature_inquiry",
+          "software_bug_report",
+          "support_experience"
+        ]
+      },
+      "reply": {
+        "avg_bleu4": 0.013664336323826926,
+        "avg_rouge_l": 0.12569257503235634,
+        "n_evaluated": 10
+      },
+      "escalation": {
+        "accuracy": 1.0,
+        "escalation_precision": 0.0,
+        "escalation_recall": 0.0,
+        "escalation_f1": 0.0,
+        "true_distribution": {
+          "auto": 10
+        },
+        "predicted_distribution": {
+          "auto": 10
+        }
+      }
+    }
+  },
+  "llm_judge": {
+    "relevance": {
+      "mean": 3.3,
+      "min": 2,
+      "max": 4,
+      "std": 0.7810249675906654
+    },
+    "tone": {
+      "mean": 4.3,
+      "min": 3,
+      "max": 5,
+      "std": 0.6403124237432849
+    },
+    "accuracy": {
+      "mean": 4.9,
+      "min": 4,
+      "max": 5,
+      "std": 0.3
+    },
+    "helpfulness": {
+      "mean": 3.3,
+      "min": 2,
+      "max": 4,
+      "std": 0.7810249675906654
+    },
+    "completeness": {
+      "mean": 3.2,
+      "min": 2,
+      "max": 4,
+      "std": 0.7483314773547882
+    },
+    "overall": {
+      "mean": 3.8,
+      "min": 2.8,
+      "max": 4.4,
+      "n_evaluated": 10,
+      "n_errors": 0
+    }
+  }
+}

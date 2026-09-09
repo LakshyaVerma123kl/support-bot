@@ -1,0 +1,54 @@
+{
+  "relevance": {
+    "cohens_kappa": 0.4266055045871559,
+    "pearson_r": 0.7722517500412138,
+    "spearman_rho": 0.6946153846153846,
+    "mean_abs_diff": 0.4,
+    "exact_agreement": 0.6,
+    "within_1_agreement": 1.0,
+    "n_samples": 25
+  },
+  "tone": {
+    "cohens_kappa": 0.46043165467625896,
+    "pearson_r": 0.7001501962557009,
+    "spearman_rho": 0.803076923076923,
+    "mean_abs_diff": 0.36,
+    "exact_agreement": 0.64,
+    "within_1_agreement": 1.0,
+    "n_samples": 25
+  },
+  "accuracy": {
+    "cohens_kappa": -0.038961038961038995,
+    "pearson_r": 0.507667394498166,
+    "spearman_rho": 0.36,
+    "mean_abs_diff": 0.64,
+    "exact_agreement": 0.36,
+    "within_1_agreement": 1.0,
+    "n_samples": 25
+  },
+  "helpfulness": {
+    "cohens_kappa": 0.5110024449877751,
+    "pearson_r": 0.7821750141809626,
+    "spearman_rho": 0.7592307692307693,
+    "mean_abs_diff": 0.32,
+    "exact_agreement": 0.68,
+    "within_1_agreement": 1.0,
+    "n_samples": 25
+  },
+  "completeness": {
+    "cohens_kappa": 0.43037974683544306,
+    "pearson_r": 0.6969952162728222,
+    "spearman_rho": 0.6546153846153846,
+    "mean_abs_diff": 0.36,
+    "exact_agreement": 0.64,
+    "within_1_agreement": 1.0,
+    "n_samples": 25
+  },
+  "overall": {
+    "avg_cohens_kappa": 0.35789166242511883,
+    "avg_pearson_r": 0.6918479142497731,
+    "avg_spearman_rho": 0.6543076923076924,
+    "avg_exact_agreement": 0.5840000000000001,
+    "avg_within_1_agreement": 1.0
+  }
+}
