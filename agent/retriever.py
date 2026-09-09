@@ -69,6 +69,8 @@ class ConversationRetriever:
 
         # Build TF-IDF matrix on customer messages
         customer_texts = [item['customer_message'] for item in self.conversation_index]
+        min_df = 2 if len(customer_texts) > 10 else 1
+        self.vectorizer.set_params(min_df=min_df)
         self.tfidf_matrix = self.vectorizer.fit_transform(customer_texts)
         self._is_fitted = True
 

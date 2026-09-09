@@ -47,22 +47,29 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
 # Model selection:
-# qwen/qwen3.8-27b is high-speed (~0.3s), supports structured JSON, and has strong reasoning
-MODEL_CLASSIFY = "qwen/qwen3.8-27b"
-MODEL_GENERATE = "qwen/qwen3.8-27b"
-MODEL_JUDGE = "qwen/qwen3.8-27b"
+# Default is qwen/qwen3.8-27b (sub-second ~0.28s latency, direct JSON mode)
+# Alternative supported models on Groq: openai/gpt-oss-120b, openai/gpt-oss-20b
+DEFAULT_MODEL = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
+MODEL_CLASSIFY = DEFAULT_MODEL
+MODEL_GENERATE = DEFAULT_MODEL
+MODEL_JUDGE = DEFAULT_MODEL
 
 # Rate limit settings (free tier)
 RATE_LIMITS = {
-    MODEL_CLASSIFY: {
+    "qwen/qwen3.8-27b": {
         "rpm": 30,       # Requests per minute
         "rpd": 14400,    # Requests per day
         "tpd": 500000,   # Tokens per day
     },
-    MODEL_GENERATE: {
+    "openai/gpt-oss-120b": {
         "rpm": 30,
-        "rpd": 1000,
-        "tpd": 100000,
+        "rpd": 10000,
+        "tpd": 500000,
+    },
+    "openai/gpt-oss-20b": {
+        "rpm": 30,
+        "rpd": 14400,
+        "tpd": 500000,
     },
 }
 

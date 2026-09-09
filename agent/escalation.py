@@ -22,13 +22,17 @@ from llm import chat_completion_json
 
 def check_keyword_escalation(message_text):
     """
-    Rule-based escalation check using keyword matching.
+    Rule-based escalation check using word-boundary matching.
+    Prevents false positives like 'issue' triggering 'sue'.
 
     Returns:
         (should_escalate: bool, matched_keywords: list)
     """
     text_lower = message_text.lower()
-    matched = [kw for kw in ESCALATION_KEYWORDS if kw in text_lower]
+    matched = [
+        kw for kw in ESCALATION_KEYWORDS
+        if re.search(r'\b' + re.escape(kw) + r'\b', text_lower)
+    ]
     return len(matched) > 0, matched
 
 

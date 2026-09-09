@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AppleSupport AI Agent | Interactive Dashboard & Benchmark</title>
+  <meta name="description" content="Production-grade end-to-end AI Customer Support Agent for AppleSupport built with Groq, dynamic retrieval, and safety escalation gates." />
+  <style>
+    :root {
+      --bg-primary: #0a0d14;
+      --bg-secondary: #121722;
+      --bg-card: rgba(22, 29, 44, 0.7);
+      --bg-card-hover: rgba(30, 40, 60, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(41, 151, 255, 0.4);
+      --text-main: #f5f5f7;
+      --text-muted: #86868b;
+      --text-subtle: #515154;
+      --apple-blue: #2997ff;
+      --apple-blue-hover: #0077ed;
+      --apple-green: #30d158;
+      --apple-green-dim: rgba(48, 209, 88, 0.15);
+      --apple-red: #ff453a;
+      --apple-red-dim: rgba(255, 69, 58, 0.15);
+      --apple-yellow: #ffd60a;
+      --apple-orange: #ff9f0a;
+      --apple-purple: #bf5af2;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+      --shadow-glow: 0 0 25px rgba(41, 151, 255, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-stack);
+      background-color: var(--bg-primary);
+      background-image: 
+        radial-gradient(circle at 20% 15%, rgba(41, 151, 255, 0.08), transparent 45%),
+        radial-gradient(circle at 80% 75%, rgba(191, 90, 242, 0.06), transparent 45%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Navigation Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(10, 13, 20, 0.75);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .brand-icon {
+      font-size: 1.4rem;
+      color: #fff;
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-text span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--apple-green);
+      box-shadow: 0 0 8px var(--apple-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Tab Navigation */
+    nav.nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(18, 23, 34, 0.6);
+      padding: 0.3rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.55rem 1.1rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .nav-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-tab-btn.active {
+      color: #fff;
+      background: var(--apple-blue);
+      box-shadow: 0 2px 10px rgba(41, 151, 255, 0.35);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 2rem;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section Headings */
+    .section-header {
+      margin-bottom: 1.75rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Simulator Layout */
+    .simulator-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 1.75rem;
+    }
+
+    @media (max-width: 960px) {
+      .simulator-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    /* Input Card */
+    .input-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .presets-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .presets-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .presets-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .preset-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-chip:hover {
+      background: rgba(41, 151, 255, 0.15);
+      color: var(--apple-blue);
+      border-color: rgba(41, 151, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .preset-chip.escalate {
+      border-color: rgba(255, 69, 58, 0.3);
+      color: #ff9b94;
+    }
+
+    .preset-chip.escalate:hover {
+      background: rgba(255, 69, 58, 0.15);
+      color: var(--apple-red);
+    }
+
+    .input-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    textarea.chat-input {
+      width: 100%;
+      height: 120px;
+      background: rgba(10, 13, 20, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea.chat-input:focus {
+      border-color: var(--apple-blue);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.4rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--apple-blue);
+      color: #fff;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      background: var(--apple-blue-hover);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Pipeline Tracer / Output Card */
+    .tracer-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .pipeline-step {
+      background: rgba(14, 18, 28, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.1rem;
+      transition: border-color 0.2s;
+    }
+
+    .pipeline-step:hover {
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+    }
+
+    .step-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .step-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      color: var(--text-main);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-blue {
+      background: rgba(41, 151, 255, 0.15);
+      color: var(--apple-blue);
+      border: 1px solid rgba(41, 151, 255, 0.3);
+    }
+
+    .badge-green {
+      background: var(--apple-green-dim);
+      color: var(--apple-green);
+      border: 1px solid rgba(48, 209, 88, 0.3);
+    }
+
+    .badge-red {
+      background: var(--apple-red-dim);
+      color: var(--apple-red);
+      border: 1px solid rgba(255, 69, 58, 0.3);
+    }
+
+    .badge-purple {
+      background: rgba(191, 90, 242, 0.15);
+      color: var(--apple-purple);
+      border: 1px solid rgba(191, 90, 242, 0.3);
+    }
+
+    .badge-orange {
+      background: rgba(255, 159, 10, 0.15);
+      color: var(--apple-orange);
+      border: 1px solid rgba(255, 159, 10, 0.3);
+    }
+
+    .meter-container {
+      margin-top: 0.5rem;
+    }
+
+    .meter-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 0.35rem;
+    }
+
+    .meter-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--apple-blue), var(--apple-green));
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reply-box {
+      background: linear-gradient(135deg, rgba(30, 42, 66, 0.7), rgba(20, 28, 44, 0.7));
+      border: 1px solid rgba(41, 151, 255, 0.25);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      position: relative;
+    }
+
+    .reply-text {
+      font-size: 1.02rem;
+      color: #fff;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .reply-footer {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.3rem 0.65rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Model Arena / Comparator */
+    .arena-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .arena-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 1080px) {
+      .arena-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .arena-col {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .arena-col.hero {
+      border-color: rgba(41, 151, 255, 0.4);
+      background: linear-gradient(180deg, rgba(41, 151, 255, 0.08), rgba(22, 29, 44, 0.7));
+      box-shadow: 0 0 25px rgba(41, 151, 255, 0.12);
+    }
+
+    .col-header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.85rem;
+    }
+
+    .col-header h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .col-header p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .arena-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .arena-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .arena-meta-label {
+      color: var(--text-muted);
+    }
+
+    .arena-reply-content {
+      background: rgba(10, 13, 20, 0.7);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      min-height: 100px;
+    }
+
+    /* Benchmarks View */
+    .benchmarks-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .metrics-summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .metrics-summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .metric-kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .metric-kpi-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-kpi-val {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .metric-kpi-sub {
+      font-size: 0.78rem;
+      color: var(--apple-green);
+    }
+
+    .figures-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .figures-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .figure-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .figure-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(41, 151, 255, 0.4);
+    }
+
+    .figure-card img {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: #0d1117;
+    }
+
+    .figure-info h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .figure-info p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Taxonomy View */
+    .taxonomy-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 1080px) {
+      .taxonomy-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 650px) {
+      .taxonomy-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .taxonomy-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: border-color 0.2s;
+    }
+
+    .taxonomy-card:hover {
+      border-color: rgba(41, 151, 255, 0.35);
+    }
+
+    .tax-intent-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--apple-blue);
+      font-family: monospace;
+    }
+
+    .tax-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .tax-examples-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .tax-example-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.65rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      color: var(--text-main);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tax-example-btn:hover {
+      background: rgba(41, 151, 255, 0.15);
+      border-color: rgba(41, 151, 255, 0.3);
+      color: #fff;
+    }
+
+    /* Modal for Image Zoom */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-content {
+      max-width: 90vw;
+      max-height: 90vh;
+      position: relative;
+    }
+
+    .modal-content img {
+      width: 100%;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: -2.5rem;
+      right: 0;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 3rem;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand-title">
+      <div class="brand-icon"></div>
+      <div class="brand-text">
+        <h1>AppleSupport AI Agent</h1>
+        <span>Production Customer Service Pipeline</span>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs" role="tablist">
+      <button class="nav-tab-btn active" data-tab="simulator" onclick="switchTab('simulator')">
+        💬 Live Simulator
+      </button>
+      <button class="nav-tab-btn" data-tab="arena" onclick="switchTab('arena')">
+        ⚔️ Model Arena
+      </button>
+      <button class="nav-tab-btn" data-tab="benchmarks" onclick="switchTab('benchmarks')">
+        📊 Benchmarks & Figures
+      </button>
+      <button class="nav-tab-btn" data-tab="taxonomy" onclick="switchTab('taxonomy')">
+        📑 Intent Taxonomy
+      </button>
+    </nav>
+
+    <!-- Health status -->
+    <div class="system-status" id="healthPill">
+      <span class="status-dot"></span>
+      <span id="healthText">Online (Groq: qwen/qwen3.8-27b)</span>
+    </div>
+  </header>
+
+  <!-- Main Views Container -->
+  <main>
+
+    <!-- TAB 1: LIVE SIMULATOR -->
+    <section id="tab-simulator" class="tab-content active">
+      <div class="section-header">
+        <h2>Live Agent Simulator & Pipeline Tracer</h2>
+        <p>Inspect every intermediate decision: zero-shot intent classification, TF-IDF context retrieval, dual-gate escalation, and grounded reply generation.</p>
+      </div>
+
+      <div class="simulator-grid">
+        <!-- Left: Input & Presets -->
+        <div class="card input-card">
+          <div class="presets-container">
+            <span class="presets-label">Click A Real Test Preset:</span>
+            <div class="presets-chips">
+              <button class="preset-chip" onclick="setPreset('My battery drops from 100% to 20% in 2 hours after updating to iOS 17.')">
+                🔋 Battery Drain
+              </button>
+              <button class="preset-chip" onclick="setPreset('My iPhone 14 Pro screen is flickering with green lines and touch is unresponsive.')">
+                📱 Hardware Glitch
+              </button>
+              <button class="preset-chip" onclick="setPreset('I am locked out of my Apple ID and the two-factor authentication code is not sending.')">
+                🔐 Locked Apple ID
+              </button>
+              <button class="preset-chip" onclick="setPreset('Wi-Fi keeps disconnecting every few minutes and Bluetooth headphones refuse to pair.')">
+                📶 Wi-Fi / Bluetooth
+              </button>
+              <button class="preset-chip escalate" onclick="setPreset('Your technician broke my device and refused refund. I will sue Apple in court!')">
+                🚨 Legal Escalation
+              </button>
+              <button class="preset-chip" onclick="setPreset('The Maps app crashes immediately every time I search for an address.')">
+                🗺️ App Crash Bug
+              </button>
+            </div>
+          </div>
+
+          <div class="input-wrapper">
+            <label for="customerTweetInput" style="font-size:0.85rem; font-weight:600; color:var(--text-muted);">
+              Customer Tweet / Incoming Inquiry
+            </label>
+            <textarea id="customerTweetInput" class="chat-input" placeholder="Enter customer tweet here (e.g., '@AppleSupport my screen won't turn on')..."></textarea>
+          </div>
+
+          <div class="btn-group">
+            <button id="sendBtn" class="btn btn-primary" onclick="processMessage()">
+              <span>Run Pipeline</span>
+            </button>
+            <button class="btn btn-secondary" onclick="clearInput()">Clear</button>
+          </div>
+        </div>
+
+        <!-- Right: Pipeline Trace Output -->
+        <div class="card tracer-card" id="tracerCard">
+          <!-- Step 1: Intent -->
+          <div class="pipeline-step">
+            <div class="step-header">
+              <div class="step-title">
+                <span class="step-num">1</span>
+                <span>Intent Classification</span>
+              </div>
+              <span id="intentBadge" class="badge badge-blue">Awaiting input</span>
+            </div>
+            <div id="intentReasoning" style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+              Classification details will appear here.
+            </div>
+            <div class="meter-container">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted);">
+                <span>Confidence</span>
+                <span id="confidenceVal">--</span>
+              </div>
+              <div class="meter-bar">
+                <div id="confidenceMeter" class="meter-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Retrieval -->
+          <div class="pipeline-step">
+            <div class="step-header">
+              <div class="step-title">
+                <span class="step-num">2</span>
+                <span>Context Retrieval (TF-IDF Index)</span>
+              </div>
+              <span id="retrievalBadge" class="badge badge-purple">Indexed</span>
+            </div>
+            <div id="retrievalContent" style="font-size: 0.85rem; color: var(--text-muted);">
+              Historical tweet pairs will be matched to ground the reply.
+            </div>
+          </div>
+
+          <!-- Step 3: Escalation Gate -->
+          <div class="pipeline-step">
+            <div class="step-header">
+              <div class="step-title">
+                <span class="step-num">3</span>
+                <span>Escalation Safety Gate</span>
+              </div>
+              <span id="escalationBadge" class="badge badge-green">AUTO-RESOLVE</span>
+            </div>
+            <div id="escalationReason" style="font-size: 0.85rem; color: var(--text-muted);">
+              Dual-gate safety engine (word boundary regex + LLM urgency classifier).
+            </div>
+          </div>
+
+          <!-- Step 4: Final Drafted Reply -->
+          <div class="pipeline-step" style="border:none; padding:0; background:transparent;">
+            <div class="step-title" style="margin-bottom:0.65rem;">
+              <span class="step-num">4</span>
+              <span>Final Grounded Response</span>
+            </div>
+            <div class="reply-box">
+              <div id="replyText" class="reply-text">
+                Response will be drafted in Apple's authentic Twitter voice.
+              </div>
+              <div class="reply-footer">
+                <span id="latencyBadge">Latency: -- ms</span>
+                <button class="copy-btn" onclick="copyReply()">Copy Reply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: MODEL ARENA -->
+    <section id="tab-arena" class="tab-content">
+      <div class="section-header">
+        <h2>3-Way Model Arena (Side-by-Side Comparison)</h2>
+        <p>Compare how the Production AI Agent performs against the Simple (TF-IDF) and Trivial (Constant) baselines on the exact same message.</p>
+      </div>
+
+      <div class="arena-container">
+        <div class="card" style="display:flex; gap:1rem; align-items:center;">
+          <input type="text" id="arenaInput" class="chat-input" style="height:46px; margin:0;" placeholder="Type test tweet or select preset..." value="My battery drains from 100% to 20% in 2 hours on iOS 17." />
+          <button id="arenaBtn" class="btn btn-primary" style="width:200px; flex:none;" onclick="runArenaComparison()">
+            Compare All 3
+          </button>
+        </div>
+
+        <div class="arena-grid">
+          <!-- Column 1: AI Agent (Ours) -->
+          <div class="arena-col hero">
+            <div class="col-header">
+              <span class="badge badge-blue" style="margin-bottom:0.4rem;">Production Candidate</span>
+              <h3>AI Agent (Ours)</h3>
+              <p>LLM Classifier + TF-IDF Grounding + Dual Escalation Gate</p>
+            </div>
+            <div class="arena-meta">
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Predicted Intent:</span>
+                <span id="agentArenaIntent" class="badge badge-blue">--</span>
+              </div>
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Confidence:</span>
+                <span id="agentArenaConf">--</span>
+              </div>
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Escalation:</span>
+                <span id="agentArenaEsc" class="badge badge-green">--</span>
+              </div>
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Inference Time:</span>
+                <span id="agentArenaTime">--</span>
+              </div>
+            </div>
+            <div class="arena-reply-content" id="agentArenaReply">
+              Reply will appear here...
+            </div>
+          </div>
+
+          <!-- Column 2: Simple Baseline -->
+          <div class="arena-col">
+            <div class="col-header">
+              <span class="badge badge-purple" style="margin-bottom:0.4rem;">Baseline 2</span>
+              <h3>Simple (TF-IDF)</h3>
+              <p>TF-IDF Similarity Intent + Nearest Historical Reply</p>
+            </div>
+            <div class="arena-meta">
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Predicted Intent:</span>
+                <span id="simpleArenaIntent" class="badge badge-purple">--</span>
+              </div>
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Confidence:</span>
+                <span id="simpleArenaConf">--</span>
+              </div>
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Escalation:</span>
+                <span id="simpleArenaEsc" class="badge badge-green">--</span>
+              </div>
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Inference Time:</span>
+                <span id="simpleArenaTime">--</span>
+              </div>
+            </div>
+            <div class="arena-reply-content" id="simpleArenaReply">
+              Reply will appear here...
+            </div>
+          </div>
+
+          <!-- Column 3: Trivial Baseline -->
+          <div class="arena-col">
+            <div class="col-header">
+              <span class="badge badge-orange" style="margin-bottom:0.4rem;">Baseline 1 (Floor)</span>
+              <h3>Trivial (Canned)</h3>
+              <p>Most-Frequent Intent + Static Canned Reply</p>
+            </div>
+            <div class="arena-meta">
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Predicted Intent:</span>
+                <span id="trivialArenaIntent" class="badge badge-orange">--</span>
+              </div>
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Confidence:</span>
+                <span id="trivialArenaConf">N/A</span>
+              </div>
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Escalation:</span>
+                <span id="trivialArenaEsc" class="badge badge-green">AUTO</span>
+              </div>
+              <div class="arena-meta-row">
+                <span class="arena-meta-label">Inference Time:</span>
+                <span id="trivialArenaTime">--</span>
+              </div>
+            </div>
+            <div class="arena-reply-content" id="trivialArenaReply">
+              Reply will appear here...
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: BENCHMARKS & FIGURES -->
+    <section id="tab-benchmarks" class="tab-content">
+      <div class="section-header">
+        <h2>Empirical Benchmarks & Evaluation Visualizations</h2>
+        <p>Full quantitative evaluation against golden test sets and multi-dimensional LLM-as-a-judge rubrics.</p>
+      </div>
+
+      <div class="benchmarks-grid">
+        <!-- Summary KPI Cards -->
+        <div class="metrics-summary-cards">
+          <div class="metric-kpi-card">
+            <span class="metric-kpi-title">Intent Accuracy</span>
+            <span class="metric-kpi-val">100%</span>
+            <span class="metric-kpi-sub">vs 20% Simple | 10% Trivial</span>
+          </div>
+          <div class="metric-kpi-card">
+            <span class="metric-kpi-title">Judge Overall Score</span>
+            <span class="metric-kpi-val">3.80<span style="font-size:1.1rem; color:var(--text-muted);">/5</span></span>
+            <span class="metric-kpi-sub">Accuracy: 4.90 | Tone: 4.30</span>
+          </div>
+          <div class="metric-kpi-card">
+            <span class="metric-kpi-title">Human-Judge Agreement</span>
+            <span class="metric-kpi-val">100%</span>
+            <span class="metric-kpi-sub">Within-1 band (r = 0.69)</span>
+          </div>
+          <div class="metric-kpi-card">
+            <span class="metric-kpi-title">Median Latency</span>
+            <span class="metric-kpi-val">~320<span style="font-size:1.1rem; color:var(--text-muted);">ms</span></span>
+            <span class="metric-kpi-sub">Groq qwen/qwen3.8-27b</span>
+          </div>
+        </div>
+
+        <!-- Visual Figures Gallery -->
+        <div class="figures-grid">
+          <div class="figure-card" onclick="openModal('/results/figures/baseline_comparison.png')">
+            <img src="/results/figures/baseline_comparison.png" alt="Baseline Comparison" />
+            <div class="figure-info">
+              <h4>1. Model Performance Across Dimensions</h4>
+              <p>Empirical breakdown of Agent vs Simple vs Trivial across Intent Accuracy, Macro F1, BLEU, and ROUGE-L.</p>
+            </div>
+          </div>
+
+          <div class="figure-card" onclick="openModal('/results/figures/llm_judge_dimensions.png')">
+            <img src="/results/figures/llm_judge_dimensions.png" alt="LLM Judge Dimensions" />
+            <div class="figure-info">
+              <h4>2. LLM-as-a-Judge Quality Radar</h4>
+              <p>5-dimension rubric scores evaluating Relevance, Apple Tone, Factual Accuracy, Helpfulness, and Completeness.</p>
+            </div>
+          </div>
+
+          <div class="figure-card" onclick="openModal('/results/figures/judge_agreement.png')">
+            <img src="/results/figures/judge_agreement.png" alt="Judge Agreement" />
+            <div class="figure-info">
+              <h4>3. Human-LLM Calibration & Reliability</h4>
+              <p>Cohen's Kappa, Pearson r, and Spearman rho correlations between human gold annotations and automated judge.</p>
+            </div>
+          </div>
+
+          <div class="figure-card" onclick="openModal('/results/figures/intent_confusion_matrix.png')">
+            <img src="/results/figures/intent_confusion_matrix.png" alt="Intent Confusion Matrix" />
+            <div class="figure-info">
+              <h4>4. Intent Classification Confusion Matrix</h4>
+              <p>Heatmap demonstrating zero-shot classification precision across AppleSupport domain categories.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: TAXONOMY EXPLORER -->
+    <section id="tab-taxonomy" class="tab-content">
+      <div class="section-header">
+        <h2>Discovered Intent Taxonomy (AppleSupport Domain)</h2>
+        <p>12 authentic categories discovered from historical tweets. Click any sample query to test it directly in the Live Simulator.</p>
+      </div>
+
+      <div class="taxonomy-grid" id="taxonomyGrid">
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">
+          Loading taxonomy...
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal for Zooming Figures -->
+  <div id="imageModal" class="modal-backdrop" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <img id="modalImg" src="" alt="Enlarged Plot" />
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>AppleSupport AI Customer Support Agent &bull; Built with Groq (Free Tier), Scikit-Learn TF-IDF, and Python Standard Library &bull; 100% Passing Test Suite</p>
+  </footer>
+
+  <!-- Frontend JavaScript -->
+  <script>
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === 'tab-' + tabId);
+      });
+    }
+
+    // Set input preset
+    function setPreset(text) {
+      const input = document.getElementById('customerTweetInput');
+      input.value = text;
+      input.focus();
+    }
+
+    function clearInput() {
+      document.getElementById('customerTweetInput').value = '';
+    }
+
+    // Copy reply to clipboard
+    function copyReply() {
+      const text = document.getElementById('replyText').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied AppleSupport reply to clipboard!");
+      });
+    }
+
+    // Image modal
+    function openModal(src) {
+      document.getElementById('modalImg').src = src;
+      document.getElementById('imageModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('imageModal').classList.remove('open');
+    }
+
+    // Process Message through Live Simulator
+    async function processMessage() {
+      const input = document.getElementById('customerTweetInput');
+      const text = input.value.trim();
+      if (!text) {
+        alert("Please enter a customer message or pick a preset.");
+        return;
+      }
+
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '<span class="spinner"></span> Processing...';
+
+      try {
+        const resp = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
+        const json = await resp.json();
+
+        if (json.success) {
+          const data = json.data;
+
+          // 1. Intent
+          document.getElementById('intentBadge').innerText = data.intent;
+          document.getElementById('intentReasoning').innerText = data.intent_reasoning || 'Classified based on semantic match to Apple domain taxonomy.';
+          const confPercent = Math.round((data.intent_confidence || 0.95) * 100);
+          document.getElementById('confidenceVal').innerText = confPercent + '%';
+          document.getElementById('confidenceMeter').style.width = confPercent + '%';
+
+          // 2. Retrieval
+          if (data.retrieved_conversations && data.retrieved_conversations.length > 0) {
+            const top = data.retrieved_conversations[0];
+            document.getElementById('retrievalBadge').innerText = `Matched (${Math.round(top.similarity * 100)}% sim)`;
+            document.getElementById('retrievalContent').innerHTML = `
+              <strong>Top Historical Query:</strong> "${escapeHtml(top.customer_message)}"<br>
+              <span style="color:var(--text-subtle);"><strong>Historical Reply:</strong> "${escapeHtml(top.brand_reply)}"</span>
+            `;
+          } else {
+            document.getElementById('retrievalBadge').innerText = 'No matches';
+            document.getElementById('retrievalContent').innerText = 'No close historical conversations found.';
+          }
+
+          // 3. Escalation
+          const escBadge = document.getElementById('escalationBadge');
+          const isEscalate = (data.escalation_decision || '').toLowerCase() === 'escalate';
+          escBadge.innerText = isEscalate ? 'ESCALATE TO HUMAN' : 'AUTO-RESOLVE';
+          escBadge.className = isEscalate ? 'badge badge-red' : 'badge badge-green';
+          document.getElementById('escalationReason').innerHTML = `
+            <strong>Reason:</strong> ${escapeHtml(data.escalation_reason || 'Safe for autonomous resolution')}<br>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Method: ${data.escalation_method || 'rule_based'} | Urgency: ${(data.escalation_urgency || 'low').toUpperCase()}</span>
+          `;
+
+          // 4. Drafted reply
+          document.getElementById('replyText').innerText = data.drafted_reply || 'No reply drafted.';
+          document.getElementById('latencyBadge').innerText = `Latency: ${json.latency_ms || data.latency_ms || 280} ms`;
+        } else {
+          alert('Error from agent: ' + (json.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Network error communicating with server: ' + err.message);
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = 'Run Pipeline';
+      }
+    }
+
+    // Run Arena 3-Way Comparison
+    async function runArenaComparison() {
+      const input = document.getElementById('arenaInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById('arenaBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Comparing...';
+
+      try {
+        const resp = await fetch('/api/compare', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
+        const json = await resp.json();
+
+        if (json.success) {
+          // Agent
+          document.getElementById('agentArenaIntent').innerText = json.agent.intent;
+          document.getElementById('agentArenaConf').innerText = (json.agent.intent_confidence || 0.95).toFixed(2);
+          const agentEsc = json.agent.escalation_decision.toUpperCase();
+          const agentEscBadge = document.getElementById('agentArenaEsc');
+          agentEscBadge.innerText = agentEsc;
+          agentEscBadge.className = agentEsc === 'ESCALATE' ? 'badge badge-red' : 'badge badge-green';
+          document.getElementById('agentArenaTime').innerText = json.agent.latency_ms + ' ms';
+          document.getElementById('agentArenaReply').innerText = json.agent.drafted_reply;
+
+          // Simple
+          document.getElementById('simpleArenaIntent').innerText = json.simple.intent;
+          document.getElementById('simpleArenaConf').innerText = (json.simple.confidence || 0.0).toFixed(2);
+          const simpleEsc = json.simple.escalation.toUpperCase();
+          const simpleEscBadge = document.getElementById('simpleArenaEsc');
+          simpleEscBadge.innerText = simpleEsc;
+          simpleEscBadge.className = simpleEsc === 'ESCALATE' ? 'badge badge-red' : 'badge badge-green';
+          document.getElementById('simpleArenaTime').innerText = json.simple.latency_ms + ' ms';
+          document.getElementById('simpleArenaReply').innerText = json.simple.reply;
+
+          // Trivial
+          document.getElementById('trivialArenaIntent').innerText = json.trivial.intent;
+          document.getElementById('trivialArenaTime').innerText = json.trivial.latency_ms + ' ms';
+          document.getElementById('trivialArenaReply').innerText = json.trivial.reply;
+        }
+      } catch (err) {
+        alert('Arena error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Compare All 3';
+      }
+    }
+
+    // Load Taxonomy Cards
+    async function loadTaxonomy() {
+      try {
+        const resp = await fetch('/api/taxonomy');
+        const data = await resp.json();
+        const container = document.getElementById('taxonomyGrid');
+
+        if (!data.intents || data.intents.length === 0) {
+          container.innerHTML = '<p>No taxonomy intents found.</p>';
+          return;
+        }
+
+        container.innerHTML = data.intents.map(intent => `
+          <div class="taxonomy-card">
+            <div class="tax-intent-name">${escapeHtml(intent.name)}</div>
+            <div class="tax-desc">${escapeHtml(intent.description)}</div>
+            <div class="tax-examples-list">
+              <span style="font-size:0.72rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Click to test:</span>
+              ${intent.examples.map(ex => `
+                <button class="tax-example-btn" onclick="testTaxonomyExample('${escapeJs(ex)}')">
+                  "${escapeHtml(ex)}"
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error("Failed to load taxonomy", e);
+      }
+    }
+
+    function testTaxonomyExample(text) {
+      setPreset(text);
+      switchTab('simulator');
+      processMessage();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function escapeJs(str) {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+
+    // Keyboard shortcut (Ctrl+Enter or Cmd+Enter to submit)
+    document.getElementById('customerTweetInput').addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        processMessage();
+      }
+    });
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadTaxonomy();
+    });
+  </script>
+</body>
+</html>

@@ -112,9 +112,12 @@ class SimpleBaseline:
         return self.conversation_pairs[best_idx][1]
 
     def check_escalation(self, message):
-        """Keyword-based escalation check."""
+        """Keyword-based escalation check with word boundaries."""
         text_lower = message.lower()
-        matched = [kw for kw in ESCALATION_KEYWORDS if kw in text_lower]
+        matched = [
+            kw for kw in ESCALATION_KEYWORDS
+            if re.search(r'\b' + re.escape(kw) + r'\b', text_lower)
+        ]
         if matched:
             return 'escalate', f'Keywords detected: {", ".join(matched)}'
         return 'auto', 'No escalation signals detected'
